@@ -1,0 +1,26 @@
+services:
+  provider:
+    image: golemfactory/provider:0.17.9
+    container_name: golem-provider
+    command: ['golemsp', 'run', '--no-interactive']
+    restart: unless-stopped
+    network_mode: host
+
+    devices:
+      - /dev/kvm:/dev/kvm
+
+    volumes:
+      - golem-yagna:/root/.local/share/yagna
+      - golem-provider:/root/.local/share/ya-provider
+
+    environment:
+      NODE_NAME: 'DS916-Golem'
+      YA_PAYMENT_NETWORK_GROUP: 'mainnet'
+      SUBNET: 'public'
+      YA_RT_CORES: 2
+      YA_RT_MEM: 1.0
+      YA_RT_STORAGE: 20
+
+volumes:
+  golem-yagna:
+  golem-provider:

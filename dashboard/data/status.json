@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-09-01 18:22:12",
+  "service": "is running",
+  "network": "mainnet",
+  "vm": "valid",
+  "driver": "Ok",
+  "profile": "NIGHT",
+  "cores": "3",
+  "memory": "4",
+  "disk": "20",
+  "jobs_last_hour": "0",
+  "jobs_in_progress": "0",
+  "jobs_total": "0",
+  "glm_total": "0",
+  "glm_pending": "0",
+  "glm_issued": "0",
+  "cpu_price": "0.025000000000000001",
+  "hour_price": "0.005000000000000000"
+}

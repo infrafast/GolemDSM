@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS916-Golem Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0 0 6px 0;
+    }
+
+    .subtitle {
+      color: #aaa;
+      margin-bottom: 24px;
+    }
+
+    .external-link {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #1c1c1c;
+      box-shadow: 0 0 0 1px #2b2b2b;
+      color: #eee;
+      text-decoration: none;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .external-link:hover {
+      background: #272727;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 0 0 1px #2b2b2b;
+    }
+
+    .label {
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .value {
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .small {
+      font-size: 16px;
+    }
+
+    .ok {
+      color: #5dd46f;
+    }
+
+    .warn {
+      color: #ffcf5a;
+    }
+
+    .bad {
+      color: #ff6961;
+    }
+
+    .section {
+      margin-top: 28px;
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: #777;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="header-row">
+    <div>
+      <h1>DS916-Golem</h1>
+      <div class="subtitle">Golem Provider Dashboard</div>
+    </div>
+
+    <a
+      class="external-link"
+      href="https://stats.golem.network/network/provider/0x39c19077a31694f3c8863aa77cad2177606c1b68"
+      target="_blank"
+      rel="noopener noreferrer">
+      Voir sur Golem Network Stats ↗
+    </a>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">Provider</div>
+      <div class="value" id="providerStatus">...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Réseau</div>
+      <div class="value" id="network">...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Profil</div>
+      <div class="value" id="profile">...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Dernière mise à jour</div>
+      <div class="value small" id="timestamp">...</div>
+    </div>
+
+  </div>
+
+  <div class="section">Ressources proposées</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">CPU</div>
+      <div class="value"><span id="cores">...</span> cores</div>
+    </div>
+
+    <div class="card">
+      <div class="label">RAM</div>
+      <div class="value"><span id="memory">...</span> GiB</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Disque</div>
+      <div class="value"><span id="disk">...</span> GiB</div>
+    </div>
+
+  </div>
+
+  <div class="section">Jobs</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">En cours</div>
+      <div class="value" id="jobsInProgress">...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Dernière heure</div>
+      <div class="value" id="jobsLastHour">...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Total traités</div>
+      <div class="value" id="jobsTotal">...</div>
+    </div>
+
+  </div>
+
+  <div class="section">Revenus</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">Total</div>
+      <div class="value"><span id="glmTotal">...</span> GLM</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Pending</div>
+      <div class="value"><span id="glmPending">...</span> GLM</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Issued</div>
+      <div class="value"><span id="glmIssued">...</span> GLM</div>
+    </div>
+
+  </div>
+
+  <div class="section">Tarifs</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">CPU</div>
+      <div class="value small"><span id="cpuPrice">...</span> GLM / CPU·h</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Environnement</div>
+      <div class="value small"><span id="hourPrice">...</span> GLM / h</div>
+    </div>
+
+    <div class="card">
+      <div class="label">VM / Driver</div>
+      <div class="value small">
+        <span id="vm">...</span> / <span id="driver">...</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Rafraîchissement automatique toutes les heures ·
+    <a
+      href="https://stats.golem.network/network/provider/0x39c19077a31694f3c8863aa77cad2177606c1b68"
+      target="_blank"
+      rel="noopener noreferrer"
+      style="color:#aaa;">
+      Fiche publique Golem Network Stats
+    </a>
+  </footer>
+
+</div>
+
+<script>
+
+function fmt(v) {
+  const n = Number(v);
+  if (Number.isNaN(n)) return v || "0";
+  return n.toFixed(3).replace(/\.?0+$/, "");
+}
+
+async function refresh() {
+
+  try {
+
+    const response = await fetch('./data/status.json?ts=' + Date.now());
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const d = await response.json();
+
+    const status = document.getElementById("providerStatus");
+
+    if (d.service === "is running" && d.vm === "valid" && d.driver === "Ok") {
+      status.textContent = "ONLINE";
+      status.className = "value ok";
+    } else {
+      status.textContent = "WARNING";
+      status.className = "value warn";
+    }
+
+    document.getElementById("network").textContent =
+      (d.network || "").toUpperCase();
+
+    document.getElementById("profile").textContent =
+      d.profile === "NIGHT" ? "NUIT" :
+      d.profile === "DAY" ? "JOUR" :
+      d.profile;
+
+    document.getElementById("timestamp").textContent = d.timestamp;
+
+    document.getElementById("cores").textContent = d.cores;
+    document.getElementById("memory").textContent = d.memory;
+    document.getElementById("disk").textContent = d.disk;
+
+    document.getElementById("jobsInProgress").textContent = d.jobs_in_progress;
+    document.getElementById("jobsLastHour").textContent = d.jobs_last_hour;
+    document.getElementById("jobsTotal").textContent = d.jobs_total;
+
+    document.getElementById("glmTotal").textContent = fmt(d.glm_total);
+    document.getElementById("glmPending").textContent = fmt(d.glm_pending);
+    document.getElementById("glmIssued").textContent = fmt(d.glm_issued);
+
+    document.getElementById("cpuPrice").textContent = fmt(d.cpu_price);
+    document.getElementById("hourPrice").textContent = fmt(d.hour_price);
+
+    document.getElementById("vm").textContent = d.vm;
+    document.getElementById("driver").textContent = d.driver;
+
+  } catch (e) {
+
+    const status = document.getElementById("providerStatus");
+    status.textContent = "OFFLINE";
+    status.className = "value bad";
+
+  }
+}
+
+refresh();
+setInterval(refresh, 3600000);
+
+</script>
+
+</body>
+</html>
