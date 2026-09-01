@@ -29,55 +29,6 @@ Il affiche notamment :
 - tarifs ;
 - état VM / Driver.
 
-
-### Statistiques publiques du réseau Golem
-
-En complément du dashboard local, Golem propose un site public de statistiques :
-
-**Golem Network Stats**
-
-```text
-https://stats.golem.network/
-```
-
-Ce site permet d'obtenir une vue globale du réseau Golem et de comparer son Provider avec les autres nœuds actifs.
-
-On peut notamment y consulter :
-
-- le nombre de Providers visibles sur le réseau ;
-- les ressources CPU / RAM / stockage proposées ;
-- les tarifs pratiqués par les autres Providers ;
-- l'activité récente du réseau ;
-- les informations publiques d'un Provider ;
-- les jobs / activités visibles dans les statistiques ;
-- les revenus ou données économiques publiquement exposés par le réseau.
-
-Pour retrouver son propre Provider, rechercher son **Node ID / adresse wallet**, visible avec :
-
-```bash
-sudo docker exec golem-provider golemsp status
-```
-
-Le nom du nœud configuré actuellement est :
-
-```text
-DS916-Golem
-```
-
-Le Node ID / wallet est toutefois l'identifiant le plus fiable pour retrouver le Provider.
-
-> Le site de statistiques est une vue publique du réseau et ne remplace pas le dashboard local. Certaines données peuvent apparaître avec un délai et un nouveau Provider peut ne pas être visible immédiatement.
-
-Autre portail utile :
-
-**Golem Portal**
-
-```text
-https://portal.golem.network/
-```
-
-Le Golem Portal est principalement orienté vers les utilisateurs qui souhaitent **déployer ou exécuter des applications sur le réseau Golem**. Il ne constitue pas le tableau de bord d'administration du Provider. Pour l'administration du DS916-Golem, utiliser le dashboard local et les commandes `golemsp`.
-
 Le dashboard lit :
 
 ```text
@@ -180,27 +131,58 @@ sudo docker restart golem-provider
 
 ## 1.5 Modifier les tarifs
 
-Voir d'abord les tarifs :
+Le tarif est **unique pour les profils JOUR et NUIT**.
+
+Les scripts de permutation JOUR / NUIT ne modifient **jamais** les tarifs. Ils ne changent que les ressources proposées :
+
+- CPU ;
+- RAM ;
+- stockage.
+
+Toute modification de prix se fait donc **manuellement en CLI** et reste ensuite valable pour les deux profils.
+
+Voir d'abord les tarifs actuels :
 
 ```bash
 sudo docker exec golem-provider golemsp settings show
 ```
 
-Le tarif CPU actuel est d'environ :
+Tarifs actuellement configurés :
 
 ```text
-0.025 GLM / CPU·h
+CPU/h : 0.010 GLM
+Env/h : 0.002 GLM
+Start : 0 GLM
 ```
 
-Avant toute modification, vérifier les options exactes de la version installée :
+Ces valeurs sont appliquées aux deux presets :
+
+```text
+vm
+wasmtime
+```
+
+Pour modifier les tarifs, la commande actuellement utilisée est :
+
+```bash
+sudo docker exec golem-provider golemsp settings set --cpu-per-hour 0.010 --env-per-hour 0.002 --starting-fee 0
+```
+
+Adapter simplement les valeurs numériques au tarif souhaité.
+
+Exemple pour passer à `0.008 GLM / CPU·h` tout en conservant `0.002 GLM / h` d'environnement :
+
+```bash
+sudo docker exec golem-provider golemsp settings set --cpu-per-hour 0.008 --env-per-hour 0.002 --starting-fee 0
+```
+
+Avant toute modification, on peut vérifier les options exactes supportées par la version installée :
 
 ```bash
 sudo docker exec golem-provider golemsp settings set --help
 ```
 
-Puis appliquer le tarif voulu avec l'option indiquée par l'aide.
-
-Après modification :
+Après modification, redémarrer le Provider afin de republier proprement l'offre :
 
 ```bash
 sudo docker restart golem-provider
@@ -211,6 +193,10 @@ Puis vérifier :
 ```bash
 sudo docker exec golem-provider golemsp settings show
 ```
+
+Le résultat doit afficher le nouveau tarif pour les presets `vm` et `wasmtime`.
+
+> **Important :** les scripts `golem-profile.sh day` et `golem-profile.sh night` ne doivent pas contenir d'options `--cpu-per-hour`, `--env-per-hour` ou `--starting-fee`. Le prix reste volontairement indépendant du profil horaire.
 
 ---
 
@@ -551,6 +537,9 @@ RAM Golem             : 4 GiB
 Disque                : 20 GiB
 ```
 
+
+> **Politique de tarification :** le scheduler JOUR / NUIT ne modifie pas les prix. Le tarif est global et unique, actuellement `0.010 GLM / CPU·h`, `0.002 GLM / h` d'environnement et `0 GLM` au démarrage. Toute modification de prix est effectuée manuellement avec `golemsp settings set`.
+
 Le script vérifie qu'aucun job n'est en cours.
 
 S'il y a un job :
@@ -681,35 +670,6 @@ Le JavaScript lit le JSON avec un chemin relatif :
 
 ```javascript
 fetch('./data/status.json?ts=' + Date.now())
-```
-
----
-
-## 2.11.1 Supervision externe du réseau
-
-Le dashboard Web Station fournit l'état local du Provider. Pour une vue extérieure et publique du réseau, utiliser :
-
-```text
-https://stats.golem.network/
-```
-
-Cette vue est particulièrement utile pour :
-
-- vérifier que le Provider est visible depuis le réseau public ;
-- comparer ses tarifs avec ceux d'autres Providers ;
-- observer l'offre globale de CPU / RAM / stockage ;
-- suivre l'évolution générale de l'activité du réseau.
-
-L'identifiant à utiliser pour retrouver précisément le nœud est le **Node ID / wallet** retourné par :
-
-```bash
-sudo docker exec golem-provider golemsp status
-```
-
-Cette supervision externe est complémentaire du fichier local :
-
-```text
-/volume2/docker/golem/dashboard/data/status.json
 ```
 
 ---
