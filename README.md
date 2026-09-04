@@ -242,7 +242,74 @@ Des lignes du type `Established P2P session` indiquent que le nœud communique a
 
 ---
 
-## 1.8 Voir la consommation CPU / RAM
+## 1.8 Activer les statistiques publiques Golem Network Stats
+
+Le Provider peut fonctionner, recevoir des jobs et être payé sans envoyer de télémétrie. En revanche, sans consentement, la page publique Golem Network Stats peut afficher :
+
+```text
+No data to show
+This node did not report any activity in the last 24 hours
+```
+
+Dans les logs du conteneur, l'absence de consentement apparaît typiquement sous la forme :
+
+```text
+Not pushing metrics, because stats consent is not given
+Consent file not exist: /root/.local/share/yagna/CONSENT
+```
+
+Pour activer la remontée des statistiques :
+
+```bash
+sudo docker exec golem-provider golemsp consent show
+sudo docker exec golem-provider golemsp consent --help
+sudo docker exec golem-provider golemsp consent allow-all
+sudo docker exec golem-provider golemsp consent show
+```
+
+Le chemin du fichier de consentement peut être vérifié avec :
+
+```bash
+sudo docker exec golem-provider golemsp consent path
+```
+
+Il pointe typiquement vers :
+
+```text
+/root/.local/share/yagna/CONSENT
+```
+
+Redémarrer ensuite le Provider :
+
+```bash
+sudo docker restart golem-provider
+```
+
+Puis contrôler les logs :
+
+```bash
+sudo docker logs --tail=100 golem-provider
+```
+
+Le message `Not pushing metrics, because stats consent is not given` doit disparaître. Les statistiques publiques peuvent mettre un certain temps avant d'apparaître.
+
+Fiche publique du Provider :
+
+```text
+https://stats.golem.network/network/provider/0x39c19077a31694f3c8863aa77cad2177606c1b68
+```
+
+Vue opérateur / wallet :
+
+```text
+https://stats.golem.network/network/providers/operator/0x39c19077a31694f3c8863aa77cad2177606c1b68
+```
+
+> Le consentement aux statistiques concerne la télémétrie publique. Il n'est pas requis pour exécuter des jobs ni pour recevoir les paiements.
+
+---
+
+## 1.9 Voir la consommation CPU / RAM
 
 ```bash
 sudo docker stats golem-provider
@@ -258,7 +325,7 @@ sudo docker system df
 
 ---
 
-## 1.9 Redémarrer Golem
+## 1.10 Redémarrer Golem
 
 ```bash
 sudo docker restart golem-provider
@@ -272,7 +339,7 @@ sudo docker exec golem-provider golemsp status
 
 ---
 
-## 1.10 Arrêter / démarrer Golem
+## 1.11 Arrêter / démarrer Golem
 
 Arrêt :
 
@@ -288,7 +355,7 @@ sudo docker start golem-provider
 
 ---
 
-## 1.11 À ne jamais faire
+## 1.12 À ne jamais faire
 
 Ne jamais supprimer les volumes Docker sans sauvegarde du wallet.
 
@@ -537,7 +604,6 @@ RAM Golem             : 4 GiB
 Disque                : 20 GiB
 ```
 
-
 > **Politique de tarification :** le scheduler JOUR / NUIT ne modifie pas les prix. Le tarif est global et unique, actuellement `0.010 GLM / CPU·h`, `0.002 GLM / h` d'environnement et `0 GLM` au démarrage. Toute modification de prix est effectuée manuellement avec `golemsp settings set`.
 
 Le script vérifie qu'aucun job n'est en cours.
@@ -726,7 +792,49 @@ Exemple :
 
 ---
 
-## 2.13 Logs
+## 2.13 Télémétrie et consentement Golem Stats
+
+La remontée des métriques publiques vers **Golem Network Stats** est contrôlée par `golemsp consent`. Le consentement est stocké dans le volume persistant Yagna et reste donc présent lors d'une recréation normale du conteneur tant que les volumes Docker sont conservés.
+
+Commandes utiles :
+
+```bash
+sudo docker exec golem-provider golemsp consent show
+sudo docker exec golem-provider golemsp consent path
+sudo docker exec golem-provider golemsp consent allow-all
+sudo docker exec golem-provider golemsp consent deny-all
+sudo docker exec golem-provider golemsp consent unset-all
+```
+
+État configuré sur cette installation :
+
+```text
+Stats consent : autorisé
+```
+
+Le fichier de consentement se trouve typiquement ici :
+
+```text
+/root/.local/share/yagna/CONSENT
+```
+
+Si les logs affichent :
+
+```text
+Not pushing metrics, because stats consent is not given
+```
+
+alors la télémétrie n'est pas envoyée. Réactiver avec `golemsp consent allow-all`, redémarrer le Provider puis vérifier les logs.
+
+Cette télémétrie alimente notamment la fiche publique :
+
+```text
+https://stats.golem.network/network/provider/0x39c19077a31694f3c8863aa77cad2177606c1b68
+```
+
+---
+
+## 2.14 Logs
 
 Profil :
 
@@ -754,7 +862,7 @@ sudo docker logs -f golem-provider
 
 ---
 
-## 2.14 Vérifications après redémarrage du NAS
+## 2.15 Vérifications après redémarrage du NAS
 
 ```bash
 sudo docker ps | grep golem-provider
@@ -783,7 +891,7 @@ sudo docker exec golem-provider golemsp settings show
 
 ---
 
-## 2.15 Mise à jour de Golem
+## 2.16 Mise à jour de Golem
 
 Avant mise à jour :
 
@@ -815,7 +923,7 @@ sudo docker exec golem-provider golemsp settings show
 
 ---
 
-## 2.16 Diagnostic rapide
+## 2.17 Diagnostic rapide
 
 Conteneur :
 
@@ -853,6 +961,12 @@ KVM :
 ls -l /dev/kvm
 ```
 
+Consentement statistiques :
+
+```bash
+sudo docker exec golem-provider golemsp consent show
+```
+
 JSON dashboard :
 
 ```bash
@@ -873,7 +987,7 @@ tail -n 50 /volume2/docker/golem/profile.log
 
 ---
 
-## 2.17 Politique de ressources
+## 2.18 Politique de ressources
 
 | Période | CPU Golem | RAM Golem | Stockage |
 |---|---:|---:|---:|
@@ -889,7 +1003,7 @@ Objectifs :
 
 ---
 
-## 2.18 Sauvegardes recommandées
+## 2.19 Sauvegardes recommandées
 
 À sauvegarder :
 
@@ -910,7 +1024,7 @@ golem-key.json
 
 ---
 
-## 2.19 Restauration minimale
+## 2.20 Restauration minimale
 
 En cas de reconstruction du NAS :
 
